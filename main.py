@@ -12,19 +12,20 @@ def trade_spider(max_pages):
         plain_text = source_code.text
         soup = BeautifulSoup(plain_text, "html.parser")
         # Find all the Divs with Class DETAILS
-        divs = soup.find_all('div', {'class': 'details'})
-        for x in divs:
+        detail_div = soup.find_all('div', {'class': 'details'})
+        price_div = soup.find_all('div', {'class': 'price'})
+        for x, p in zip(detail_div, price_div):
             item_dict = {}
             headers = x.find_all('h2')
             for y in headers:
                 links = y.find_all('a')
                 for z in links:
-                    href = 'http://www.skroutz.gr/' + z.get('href')
+                    href = 'http://www.skroutz.gr' + z.get('href')
                     title = z.string
-                    print(href)
-                    print(title)
                     item_dict["Link"] = href
                     item_dict["Title"] = title
+            price = p.find('a').text
+            item_dict["Price"] = price
             item_list.append(item_dict)
         page += 1
     dataFrame = pandas.DataFrame(item_list)
